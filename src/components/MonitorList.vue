@@ -554,7 +554,11 @@ export default {
                 if (monitor.id in this.$root.lastHeartbeatList && this.$root.lastHeartbeatList[monitor.id]) {
                     monitor.status = this.$root.lastHeartbeatList[monitor.id].status;
                 }
-                statusMatch = this.filterState.status.includes(monitor.status);
+                // A paused monitor is reported as "paused" by $root.stats (its last heartbeat
+                // status is not counted as up/down/pending/maintenance there), so it must not
+                // match a status filter here either - otherwise the dropdown count and the
+                // filtered list disagree (#5115).
+                statusMatch = monitor.active && this.filterState.status.includes(monitor.status);
             }
 
             // filter by active
